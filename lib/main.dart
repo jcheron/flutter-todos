@@ -56,13 +56,13 @@ class _MyHomePageState extends State<MyHomePage> {
     'Item 3'
   ]; //List.empty(growable: true);
 
-  Future<String?> addItemDialog() {
+  Future<String?> addItemDialog([int index = -1]) {
     return showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
         title: const Text('AlertDialog Title'),
         content: TextFormField(
-            initialValue: '',
+            initialValue: (index == -1) ? '' : todoItems[index],
             onChanged: (value) {
               itemValue = value;
             }),
@@ -110,14 +110,28 @@ class _MyHomePageState extends State<MyHomePage> {
             padding: const EdgeInsets.all(8),
             itemCount: todoItems.length,
             itemBuilder: (BuildContext context, int index) {
-              return Container(
-                height: 50,
-                margin: EdgeInsets.all(2),
-                child: Center(
-                    child: Text(
-                  '${todoItems[index]}',
-                  style: TextStyle(fontSize: 18),
-                )),
+              return ListTile(
+                hoverColor: Colors.teal,
+                leading: Icon(
+                  Icons.apps,
+                ),
+                title: Text('${todoItems[index]}'),
+                dense: false,
+                trailing:
+                    Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
+                  IconButton(
+                    icon: Icon(Icons.edit),
+                    onPressed: () {},
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.clear),
+                    onPressed: () {
+                      setState(() {
+                        todoItems.removeAt(index);
+                      });
+                    },
+                  ),
+                ]),
               );
             }),
         floatingActionButton: Stack(children: <Widget>[
