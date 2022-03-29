@@ -10,7 +10,10 @@ class TodoListModel extends ChangeNotifier {
   }
 
   Todo getItem(int index) {
-    return _todos[index];
+    if (index == -1) {
+      return Todo(name: '');
+    }
+    return _todos.elementAt(index);
   }
 
   insertOrUpdate(int index, String newValue) {
@@ -22,8 +25,10 @@ class TodoListModel extends ChangeNotifier {
   }
 
   toggleCheck(int index) {
-    _todos[index].checked = !_todos[index].checked;
-    notifyListeners();
+    if (index != -1) {
+      _todos[index].checked = !_todos[index].checked;
+      notifyListeners();
+    }
   }
 
   update(int index, String newValue) {

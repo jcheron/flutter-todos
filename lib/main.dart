@@ -17,15 +17,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
         primarySwatch: Colors.blue,
       ),
       home: const MyHomePage(title: 'Todo items'),
@@ -49,14 +40,21 @@ class _MyHomePageState extends State<MyHomePage> {
       context: context,
       builder: (BuildContext context) => FocusTraversalGroup(
           child: AlertDialog(
-        title: const Text('AlertDialog Title'),
+        title: const Text('Todo element'),
         content: Consumer<TodoListModel>(builder: (context, todoList, child) {
-          return TextFormField(
-              autofocus: true,
-              initialValue: (index == -1) ? '' : todoList.getItem(index).name,
-              onChanged: (value) {
-                itemValue = value;
-              });
+          return Row(mainAxisSize: MainAxisSize.min, children: [
+            Checkbox(
+                value: todoList.getItem(index).checked,
+                onChanged: todoList.toggleCheck(index)),
+            Flexible(
+                child: TextFormField(
+                    autofocus: true,
+                    initialValue:
+                        (index == -1) ? '' : todoList.getItem(index).name,
+                    onChanged: (value) {
+                      itemValue = value;
+                    }))
+          ]);
         }),
         actions: <Widget>[
           TextButton(
@@ -67,9 +65,9 @@ class _MyHomePageState extends State<MyHomePage> {
             return TextButton(
               onPressed: () {
                 todoList.insertOrUpdate(index, itemValue);
-                Navigator.pop(context, 'Ok');
+                Navigator.pop(context, 'Okay');
               },
-              child: const Text('OK'),
+              child: const Text('Okay'),
             );
           }),
         ],
