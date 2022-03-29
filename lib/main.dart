@@ -1,3 +1,4 @@
+import 'package:firstapp/models/Todo.dart';
 import 'package:firstapp/providers/TodoListModel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -46,11 +47,13 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<String?> addItemDialog([int index = -1]) {
     return showDialog<String>(
       context: context,
-      builder: (BuildContext context) => AlertDialog(
+      builder: (BuildContext context) => FocusTraversalGroup(
+          child: AlertDialog(
         title: const Text('AlertDialog Title'),
         content: Consumer<TodoListModel>(builder: (context, todoList, child) {
           return TextFormField(
-              initialValue: (index == -1) ? '' : todoList.todos[index],
+              autofocus: true,
+              initialValue: (index == -1) ? '' : todoList.getItem(index).name,
               onChanged: (value) {
                 itemValue = value;
               });
@@ -63,16 +66,14 @@ class _MyHomePageState extends State<MyHomePage> {
           Consumer<TodoListModel>(builder: (context, todoList, child) {
             return TextButton(
               onPressed: () {
-                setState(() {
-                  todoList.addItem(itemValue);
-                  Navigator.pop(context, 'Ok');
-                });
+                todoList.insertOrUpdate(index, itemValue);
+                Navigator.pop(context, 'Ok');
               },
               child: const Text('OK'),
             );
           }),
         ],
-      ),
+      )),
     );
   }
 
@@ -84,23 +85,34 @@ class _MyHomePageState extends State<MyHomePage> {
           backgroundColor: Colors.teal,
         ),
         body: Consumer<TodoListModel>(builder: (context, todolist, child) {
-          List<String> todos = todolist.todos;
+          List<Todo> todos = todolist.todos;
           return ListView.builder(
               padding: const EdgeInsets.all(8),
               itemCount: todos.length,
               itemBuilder: (BuildContext context, int index) {
                 return ListTile(
-                  hoverColor: Colors.teal,
-                  leading: Icon(
-                    Icons.apps,
+                  leading: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.apps,
+                      ),
+                      Checkbox(
+                          value: todos[index].checked,
+                          onChanged: (value) {
+                            todolist.toggleCheck(index);
+                          })
+                    ],
                   ),
-                  title: Text(todos[index]),
+                  title: Text(todos[index].name),
                   dense: false,
                   trailing:
                       Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
                     IconButton(
                       icon: Icon(Icons.edit),
-                      onPressed: () {},
+                      onPressed: () {
+                        addItemDialog(index);
+                      },
                     ),
                     IconButton(
                       icon: Icon(Icons.clear),
