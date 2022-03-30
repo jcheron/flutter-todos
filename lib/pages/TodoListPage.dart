@@ -56,12 +56,14 @@ class _TodoListPageState extends State<TodoListPage> {
 
   @override
   Widget build(BuildContext context) {
+    final listName = ModalRoute.of(context)!.settings.arguments as String;
     return Scaffold(
         appBar: AppBar(
           title: Text(widget.title),
           backgroundColor: Colors.teal,
         ),
         body: Consumer<TodoListModel>(builder: (context, todolist, child) {
+          todolist.setActiveList(listName);
           List<Todo> todos = todolist.todos;
           return ListView.builder(
               padding: const EdgeInsets.all(8),

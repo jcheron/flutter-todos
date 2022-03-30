@@ -3,7 +3,9 @@ import 'package:firstapp/models/Todo.dart';
 import 'package:flutter/widgets.dart';
 
 class TodoListModel extends ChangeNotifier {
-  Map<String, List<Todo>> myLists = Map();
+  Map<String, List<Todo>> myLists = {
+    'Mes courses': [Todo(name: 'Eau'), Todo(name: 'Pain')]
+  };
   List<Todo> _todos = List.empty(growable: true);
 
   addItem(String item) {
@@ -19,7 +21,7 @@ class TodoListModel extends ChangeNotifier {
   }
 
   get listNames {
-    return myLists.keys;
+    return myLists.keys.toList();
   }
 
   bool addNewList(String name) {
