@@ -46,7 +46,8 @@ class _HomePage extends State<HomePage> {
                     leading: Icon(
                       Icons.apps,
                     ),
-                    title: Text(myLists[index]),
+                    title: Text(myLists[index] +
+                        " ( ${todolist.getListCount(myLists[index])})"),
                     dense: false,
                     trailing:
                         Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
