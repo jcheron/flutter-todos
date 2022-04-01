@@ -9,6 +9,10 @@ class TodoListModel extends ChangeNotifier {
 
   TodoListModel() {
     Box box = Hive.box<TodoList>(MyApp.BOXNAME);
+    /*TodoList list=TodoList()
+    ..name='Courses'
+    ..elements=[TodoElement('Eau'),TodoElement('Pain'),TodoElement('Beurre')];
+    box.add(list);*/
     List<TodoList> lists = box.values.toList().cast();
     lists.forEach((list) {
       myLists[list.name] = list.elements;
@@ -27,7 +31,7 @@ class TodoListModel extends ChangeNotifier {
     if (myLists.containsKey(name)) {
       activeListName = name;
       _todos = myLists[name] as List<TodoElement>;
-      notifyListeners();
+      //notifyListeners();
     }
   }
 
@@ -59,11 +63,11 @@ class TodoListModel extends ChangeNotifier {
     return _todos.elementAt(index);
   }
 
-  insertOrUpdate(int index, String newValue) {
+  insertOrUpdate(int index, String newValue, bool checked) {
     if (index == -1) {
       addItem(newValue);
     } else {
-      update(index, newValue);
+      update(index, newValue, checked);
     }
   }
 
@@ -74,8 +78,9 @@ class TodoListModel extends ChangeNotifier {
     }
   }
 
-  update(int index, String newValue) {
+  update(int index, String newValue, bool checked) {
     _todos[index].name = newValue;
+    _todos[index].checked = checked;
     save();
     notifyListeners();
   }

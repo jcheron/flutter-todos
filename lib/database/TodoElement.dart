@@ -4,11 +4,16 @@ part 'TodoElement.g.dart';
 
 @HiveType(typeId: 2)
 class TodoElement {
-  TodoElement(this.name);
+  TodoElement(this.name, [this.checked = false]);
 
   @HiveField(0)
   late String name;
 
   @HiveField(1)
-  bool checked = false;
+  late bool checked;
+
+  copyFrom(TodoElement other) {
+    name = other.name;
+    checked = other.checked;
+  }
 }

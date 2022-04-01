@@ -12,29 +12,35 @@ class TodoListPage extends StatefulWidget {
 }
 
 class _TodoListPageState extends State<TodoListPage> {
-  String itemValue = '';
+  TodoElement todoElement = TodoElement('');
 
-  Future<String?> addItemDialog([int index = -1]) {
+  Future<String?> addItemDialog([int index = -1, todolist]) {
+    todolist ??= Provider.of<TodoListModel>(context, listen: false);
+    todoElement.copyFrom(todolist.getItem(index));
     return showDialog<String>(
       context: context,
       builder: (BuildContext context) => FocusTraversalGroup(
           child: AlertDialog(
         title: const Text('Todo element'),
-        content: Consumer<TodoListModel>(builder: (context, todoList, child) {
-          return Row(mainAxisSize: MainAxisSize.min, children: [
-            Checkbox(
-                value: todoList.getItem(index).checked,
-                onChanged: todoList.toggleCheck(index)),
-            Flexible(
-                child: TextFormField(
-                    autofocus: true,
-                    initialValue:
-                        (index == -1) ? '' : todoList.getItem(index).name,
-                    onChanged: (value) {
-                      itemValue = value;
-                    }))
-          ]);
-        }),
+        content: Row(mainAxisSize: MainAxisSize.min, children: [
+          StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+            return Checkbox(
+                value: todoElement.checked,
+                onChanged: (bool? newValue) {
+                  setState(() {
+                    todoElement.checked = newValue ?? false;
+                  });
+                });
+          }),
+          Flexible(
+              child: TextFormField(
+                  autofocus: true,
+                  initialValue: todoElement.name,
+                  onChanged: (value) {
+                    todoElement.name = value;
+                  }))
+        ]),
         actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.pop(context, 'Cancel'),
@@ -43,7 +49,8 @@ class _TodoListPageState extends State<TodoListPage> {
           Consumer<TodoListModel>(builder: (context, todoList, child) {
             return TextButton(
               onPressed: () {
-                todoList.insertOrUpdate(index, itemValue);
+                todoList.insertOrUpdate(
+                    index, todoElement.name, todoElement.checked);
                 Navigator.pop(context, 'Okay');
               },
               child: const Text('Okay'),
@@ -90,7 +97,7 @@ class _TodoListPageState extends State<TodoListPage> {
                     IconButton(
                       icon: Icon(Icons.edit),
                       onPressed: () {
-                        addItemDialog(index);
+                        addItemDialog(index, todolist);
                       },
                     ),
                     IconButton(
@@ -109,8 +116,9 @@ class _TodoListPageState extends State<TodoListPage> {
             child: Padding(
               padding: EdgeInsets.all(25.0),
               child: FloatingActionButton(
+                heroTag: 'btAdd',
                 onPressed: addItemDialog,
-                tooltip: 'Increment',
+                tooltip: 'Ajouter',
                 child: const Icon(Icons.add),
               ),
             ),
@@ -119,6 +127,7 @@ class _TodoListPageState extends State<TodoListPage> {
             alignment: Alignment.bottomRight,
             child: Consumer<TodoListModel>(builder: (context, todoList, child) {
               return FloatingActionButton(
+                  heroTag: 'btClear',
                   child: const Icon(Icons.cancel),
                   onPressed: () {
                     todoList.clear();
