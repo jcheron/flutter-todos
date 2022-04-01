@@ -1,21 +1,32 @@
+import 'package:firstapp/database/TodoElement.dart';
+import 'package:firstapp/database/TodoList.dart';
 import 'package:firstapp/main.dart';
-import 'package:firstapp/models/Todo.dart';
 import 'package:flutter/widgets.dart';
+import 'package:hive/hive.dart';
 
 class TodoListModel extends ChangeNotifier {
-  Map<String, List<Todo>> myLists = {
-    'Mes courses': [Todo(name: 'Eau'), Todo(name: 'Pain')]
-  };
-  List<Todo> _todos = List.empty(growable: true);
+  late String activeListName;
+
+  TodoListModel() {
+    Box box = Hive.box<TodoList>(MyApp.BOXNAME);
+    List<TodoList> lists = box.values.toList().cast();
+    lists.forEach((list) {
+      myLists[list.name] = list.elements;
+    });
+  }
+
+  Map<String, List<TodoElement>> myLists = {};
+  List<TodoElement> _todos = List.empty(growable: true);
 
   addItem(String item) {
-    _todos.add(Todo(name: item));
+    _todos.add(TodoElement(item));
     notifyListeners();
   }
 
   setActiveList(String name) {
     if (myLists.containsKey(name)) {
-      _todos = myLists[name] as List<Todo>;
+      activeListName = name;
+      _todos = myLists[name] as List<TodoElement>;
       notifyListeners();
     }
   }
@@ -41,9 +52,9 @@ class TodoListModel extends ChangeNotifier {
     return myLists[name]?.length;
   }
 
-  Todo getItem(int index) {
+  TodoElement getItem(int index) {
     if (index == -1) {
-      return Todo(name: '');
+      return TodoElement('');
     }
     return _todos.elementAt(index);
   }
@@ -80,5 +91,9 @@ class TodoListModel extends ChangeNotifier {
   clear() {
     _todos.clear();
     notifyListeners();
+  }
+
+  save() {
+    //Sauvegarder activeListName et ses items (myList)
   }
 }

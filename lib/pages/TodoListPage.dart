@@ -1,4 +1,4 @@
-import 'package:firstapp/models/Todo.dart';
+import 'package:firstapp/database/TodoElement.dart';
 import 'package:firstapp/providers/TodoListModel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -64,7 +64,7 @@ class _TodoListPageState extends State<TodoListPage> {
         ),
         body: Consumer<TodoListModel>(builder: (context, todolist, child) {
           todolist.setActiveList(listName);
-          List<Todo> todos = todolist.todos;
+          List<TodoElement> todos = todolist.todos;
           return ListView.builder(
               padding: const EdgeInsets.all(8),
               itemCount: todos.length,
