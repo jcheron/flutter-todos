@@ -1,6 +1,6 @@
-# firstapp
+# Todos list sample
 
-First Application
+Todos Application
 
 ## Getting Started
 
