@@ -76,6 +76,7 @@ class TodoListModel extends ChangeNotifier {
 
   update(int index, String newValue) {
     _todos[index].name = newValue;
+    save();
     notifyListeners();
   }
 
@@ -93,7 +94,12 @@ class TodoListModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  save() {
+  save() async {
     //Sauvegarder activeListName et ses items (myList)
+    Box box = Hive.box<TodoList>(MyApp.BOXNAME);
+    TodoList list =
+        await box.values.firstWhere((element) => element.name == activeListName)
+          ?..elements = _todos
+          ..save();
   }
 }

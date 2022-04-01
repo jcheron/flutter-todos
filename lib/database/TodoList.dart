@@ -4,7 +4,7 @@ import 'package:hive/hive.dart';
 part 'TodoList.g.dart';
 
 @HiveType(typeId: 1)
-class TodoList {
+class TodoList extends HiveObject {
   @HiveField(0)
   late String name;
 
