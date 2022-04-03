@@ -8,11 +8,6 @@ class TodoListModel extends ChangeNotifier {
   late String activeListName;
 
   TodoListModel() {
-    Box box = Hive.box<TodoList>(MyApp.BOXNAME);
-    /*TodoList list=TodoList()
-    ..name='Courses'
-    ..elements=[TodoElement('Eau'),TodoElement('Pain'),TodoElement('Beurre')];
-    box.add(list);*/
     List<TodoList> lists = box.values.toList().cast();
     lists.forEach((list) {
       myLists[list.name] = list.elements;
@@ -22,8 +17,9 @@ class TodoListModel extends ChangeNotifier {
   Map<String, List<TodoElement>> myLists = {};
   List<TodoElement> _todos = List.empty(growable: true);
 
-  addItem(String item) {
-    _todos.add(TodoElement(item));
+  addItem(String item, bool checked) {
+    _todos.add(TodoElement(item, checked));
+    save();
     notifyListeners();
   }
 
@@ -65,7 +61,7 @@ class TodoListModel extends ChangeNotifier {
 
   insertOrUpdate(int index, String newValue, bool checked) {
     if (index == -1) {
-      addItem(newValue);
+      addItem(newValue, checked);
     } else {
       update(index, newValue, checked);
     }
@@ -74,6 +70,7 @@ class TodoListModel extends ChangeNotifier {
   toggleCheck(int index) {
     if (index != -1) {
       _todos[index].checked = !_todos[index].checked;
+      save();
       notifyListeners();
     }
   }
@@ -91,20 +88,25 @@ class TodoListModel extends ChangeNotifier {
 
   remove(int index) {
     _todos.removeAt(index);
+    save();
     notifyListeners();
   }
 
   clear() {
     _todos.clear();
+    save();
     notifyListeners();
+  }
+
+  Box<TodoList> get box {
+    return Hive.box<TodoList>(MyApp.BOXNAME);
   }
 
   save() async {
     //Sauvegarder activeListName et ses items (myList)
-    Box box = Hive.box<TodoList>(MyApp.BOXNAME);
     TodoList list =
-        await box.values.firstWhere((element) => element.name == activeListName)
-          ?..elements = _todos
+        box.values.firstWhere((element) => element.name == activeListName)
+          ..elements = _todos
           ..save();
   }
 }

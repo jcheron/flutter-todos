@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Todos lists application',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.lightBlue,
       ),
       initialRoute: '/',
       routes: {
